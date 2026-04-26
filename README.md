@@ -43,7 +43,7 @@ Plaintext
 Clone the Repository:
 
 Bash
-git clone
+git clone  https://github.com/udaykiran1324uk-gif/simple-todo-app.git
 
 Launch the App:
 Using VS Code "Live Server" (Recommended for Developers)
