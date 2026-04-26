@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workspace - To-Do List Application</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <span class="title-3d">To-Do List</span> Application
+            </a>
+            <div class="d-flex align-items-center">
+                <div class="dropdown">
+                    <button class="btn btn-primary rounded-pill dropdown-toggle px-3" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle me-2"></i>
+                        <span id="usernameDisplay"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end card border-0 shadow-lg mt-2 p-2" aria-labelledby="userDropdown" style="border-radius: 15px;">
+                        <li>
+                            <button class="dropdown-item rounded-3 py-2 text-danger fw-bold" onclick="logout()">
+                                <i class="bi bi-power me-2"></i>Logout
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row g-5">
+            <!-- Sidebar: Add Task -->
+            <div class="col-lg-4">
+                <div class="card p-4 sticky-top" style="top: 100px; z-index: 10;">
+                    <h5 class="fw-bold mb-4 text-primary">NEW MISSION</h5>
+                    <form id="taskForm">
+                        <div class="mb-4">
+                            <label for="taskTitle" class="form-label small fw-bold text-muted">OBJECTIVE</label>
+                            <input type="text" class="form-control" id="taskTitle" placeholder="What's the goal?" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="taskDesc" class="form-label small fw-bold text-muted">INTEL</label>
+                            <textarea class="form-control" id="taskDesc" rows="4" placeholder="Additional details..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-3">
+                            <i class="bi bi-plus-lg me-2"></i>DEPLOY TASK
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Main Content: Task Lists -->
+            <div class="col-lg-8">
+                <div class="card p-4 mb-5">
+                    <div class="card-body p-2">
+                        <!-- Search Box -->
+                        <div class="mb-5 px-2">
+                            <div class="input-group shadow-sm rounded-pill overflow-hidden" style="background: var(--bg-color); border: none;">
+                                <span class="input-group-text bg-transparent border-0 ps-4"><i class="bi bi-search text-primary"></i></span>
+                                <input type="text" id="taskSearch" class="form-control bg-transparent border-0 py-3 shadow-none" placeholder="Search for missions or intel...">
+                            </div>
+                        </div>
+
+                        <ul class="nav nav-pills mb-5 p-2 bg-light rounded-pill shadow-sm" id="taskTabs" role="tablist">
+                        <li class="nav-item flex-fill" role="presentation">
+                            <button class="nav-link active rounded-pill py-3 w-100 fw-bold" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+                                <i class="bi bi-activity me-2"></i>ACTIVE
+                            </button>
+                        </li>
+                        <li class="nav-item flex-fill" role="presentation">
+                            <button class="nav-link rounded-pill py-3 w-100 fw-bold" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab">
+                                <i class="bi bi-check-all me-2"></i>FINISHED
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="taskTabsContent">
+                        <div class="tab-pane fade show active" id="pending" role="tabpanel">
+                            <div id="pendingTasksList">
+                                <!-- Dynamic Injection -->
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="completed" role="tabpanel">
+                            <div id="completedTasksList">
+                                <!-- Dynamic Injection -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 card p-3">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold text-primary">REVISE MISSION</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="editTaskId">
+                        <div class="mb-4">
+                            <label for="editTitle" class="form-label small fw-bold text-muted">OBJECTIVE</label>
+                            <input type="text" class="form-control" id="editTitle" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="editDesc" class="form-label small fw-bold text-muted">INTEL</label>
+                            <textarea class="form-control" id="editDesc" rows="3"></textarea>
+                        </div>
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" id="editCompleted">
+                            <label class="form-check-label fw-bold" for="editCompleted">MISSION ACCOMPLISHED</label>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary flex-fill">UPDATE</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        // Add some dynamic motion on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                nav.style.transform = 'translateY(-5px)';
+                nav.style.boxShadow = '0 15px 30px rgba(0,0,0,0.1)';
+            } else {
+                nav.style.transform = 'translateY(0)';
+                nav.style.boxShadow = '0 10px 20px rgba(0,0,0,0.05)';
+            }
+        });
+    </script>
+</body>
+</html>

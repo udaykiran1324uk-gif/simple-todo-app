@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - To-Do List Application</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center min-vh-100 align-items-center">
+            <div class="col-md-5">
+                <div class="card p-4">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <h1 class="title-3d mb-2">To-Do List</h1>
+                            <p class="text-muted fw-bold">Application</p>
+                        </div>
+                        
+                        <form id="loginForm">
+                            <div class="mb-4">
+                                <label for="userIdentifier" class="form-label fw-bold text-muted small">USERNAME OR EMAIL</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control" id="userIdentifier" placeholder="Enter identifier" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="password" class="form-label fw-bold text-muted small">PASSWORD</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input type="password" class="form-control" id="password" placeholder="Enter your Password" required>
+                                    <span class="input-group-text bg-transparent" id="togglePassword" style="cursor:pointer">
+                                        <i class="bi bi-eye" id="eyeIcon"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4 text-end">
+                                <a href="#" class="text-primary text-decoration-none small fw-bold" data-bs-toggle="modal" data-bs-target="#recoveryModal">Forgot Password?</a>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 py-3 mt-2">ACCESS WORKSPACE</button>
+                        </form>
+                        
+                        <div class="text-center mt-4 pt-3">
+                            <p class="text-muted small">New user? <a href="register.html" class="text-primary text-decoration-none fw-bold">CREATE ACCOUNT</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recovery Modal -->
+    <div class="modal fade" id="recoveryModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content card border-0 p-3">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-primary">ACCOUNT RECOVERY</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="recoveryStep1">
+                        <p class="text-muted small mb-4">Enter your registered mobile number to receive an OTP.</p>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">MOBILE NUMBER</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                <input type="tel" id="recoveryMobile" class="form-control" placeholder="10-digit number">
+                            </div>
+                        </div>
+                        <button onclick="sendOTP()" class="btn btn-primary w-100 py-2">SEND OTP</button>
+                    </div>
+
+                    <div id="recoveryStep2" style="display: none;">
+                        <p class="text-muted small mb-4">An OTP has been sent to your number. Enter it below.</p>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">ENTER OTP</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
+                                <input type="text" id="recoveryOTP" class="form-control" placeholder="Enter OTP">
+                            </div>
+                            <div class="mt-2 text-center">
+                                <small class="text-primary fw-bold" id="simulatedOTPHint"></small>
+                            </div>
+                        </div>
+                        <button onclick="verifyOTP()" class="btn btn-primary w-100 py-2">VERIFY OTP</button>
+                    </div>
+
+                    <div id="recoveryStep3" style="display: none;">
+                        <p class="text-muted small mb-4">OTP Verified! Enter your new password below.</p>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">NEW PASSWORD</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" id="newPassword" class="form-control" placeholder="••••••••">
+                            </div>
+                        </div>
+                        <button onclick="resetPassword()" class="btn btn-primary w-100 py-2">UPDATE PASSWORD</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            eyeIcon.classList.toggle('bi-eye');
+            eyeIcon.classList.toggle('bi-eye-slash');
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const identifier = document.getElementById('userIdentifier').value.trim().toLowerCase();
+            const password = passwordInput.value;
+            
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => {
+                const savedIdentifier = (u.identifier || '').trim().toLowerCase();
+                const savedDisplayName = (u.displayName || '').trim().toLowerCase();
+                const savedMobile = (u.mobile || '').trim();
+                return (
+                    u.password === password &&
+                    (savedIdentifier === identifier || savedDisplayName === identifier || savedMobile === identifier)
+                );
+            });
+            
+            if (user) {
+                localStorage.setItem('currentUser', user.displayName || identifier);
+                window.location.href = 'index.html';
+            } else {
+                alert('Invalid identification. Access denied.');
+            }
+        });
+
+        // Recovery Logic
+        let recoveryUser = null;
+        let simulatedOTP = null;
+        const recoveryModalEl = document.getElementById('recoveryModal');
+
+        function resetRecoveryState() {
+            recoveryUser = null;
+            simulatedOTP = null;
+            document.getElementById('recoveryMobile').value = '';
+            document.getElementById('recoveryOTP').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('simulatedOTPHint').textContent = '';
+            document.getElementById('recoveryStep1').style.display = 'block';
+            document.getElementById('recoveryStep2').style.display = 'none';
+            document.getElementById('recoveryStep3').style.display = 'none';
+        }
+
+        recoveryModalEl.addEventListener('hidden.bs.modal', resetRecoveryState);
+
+        window.sendOTP = () => {
+            const mobile = document.getElementById('recoveryMobile').value.trim();
+            if (!/^\d{10}$/.test(mobile)) {
+                alert('Enter a valid 10-digit mobile number.');
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            recoveryUser = users.find(u => u.mobile === mobile);
+
+            if (recoveryUser) {
+                simulatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+                document.getElementById('simulatedOTPHint').textContent = `(Simulated OTP: ${simulatedOTP})`;
+                document.getElementById('recoveryStep1').style.display = 'none';
+                document.getElementById('recoveryStep2').style.display = 'block';
+            } else {
+                alert('This mobile number is not registered.');
+            }
+        };
+
+        window.verifyOTP = () => {
+            if (!simulatedOTP) {
+                alert('Please request an OTP first.');
+                return;
+            }
+
+            const enteredOTP = document.getElementById('recoveryOTP').value.trim();
+            if (!enteredOTP) {
+                alert('Please enter the OTP.');
+                return;
+            }
+
+            if (enteredOTP === simulatedOTP) {
+                document.getElementById('recoveryStep2').style.display = 'none';
+                document.getElementById('recoveryStep3').style.display = 'block';
+            } else {
+                alert('Invalid OTP. Please try again.');
+            }
+        };
+
+        window.resetPassword = () => {
+            if (!recoveryUser) {
+                alert('Recovery session expired. Please start again.');
+                return;
+            }
+
+            const newPass = document.getElementById('newPassword').value.trim();
+            if (newPass.length < 8) {
+                alert('New password must be at least 8 characters.');
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            const userIndex = users.findIndex(u => u.mobile === recoveryUser.mobile);
+            
+            if (userIndex !== -1) {
+                users[userIndex].password = newPass;
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('Password reset successful! You can now sign in.');
+                location.reload();
+            }
+        };
+    </script>
+</body>
+</html>
